@@ -12,11 +12,10 @@ const { channel } = require("diagnostics_channel")
 const { getSubscription } = require("./channelController")
 
 // Environment variables for BunnyCDN
- let BUNNY_TOKEN_KEY="1a2c385a-dfff-4f11-bec4-d109ba836b15";
-let BUNNY_API_KEY="48f3dc8c-7481-4aaf-b58327ea1483-4efd-4f5c"
+ let BUNNY_TOKEN_KEY=process.env.BUNNY_TOKEN_KEY;
+let BUNNY_API_KEY=process.env.BUNNY_API_KEY;
 //# Library ID for Bunny.net
-let BUNNY_LIBRARY_ID="319193"
-
+let BUNNY_LIBRARY_ID=process.env.BUNNY_LIBRARY_ID;
 
 const extractHashtags = (text, limit) => (text.match(/#[\w]+/g) || []).map(ht => ht.slice(1)).slice(0, limit || undefined)
 

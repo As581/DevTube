@@ -75,7 +75,7 @@ app.use((req, res) => {
 })
 
 // Set the port for the server
-const port = 5000
+const port = process.env.PORT || 5000
 // Start the server and listen on the specified port
 server.listen(port, () => {
   console.info(`Server started at http://localhost:${port}`)

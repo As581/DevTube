@@ -10,10 +10,10 @@ const crypto = require('crypto')
 const { createUniqueHandle } = require("@lib/utils")
 const { getBunnyVideo, getShorts, getPublicVideos, getTagVideos } = require("@controllers/videoController")
 
-let BUNNY_TOKEN_KEY='1a2c385a-dfff-4f11-bec4-d109ba836b15';
-let BUNNY_API_KEY='48f3dc8c-7481-4aaf-b58327ea1483-4efd-4f5c';
-let BUNNY_CDN_HOST_NAME='vz-24f86283-9c2.b-cdn.net';
-let BUNNY_LIBRARY_ID="319193";
+let BUNNY_TOKEN_KEY=process.env.BUNNY_TOKEN_KEY;
+let BUNNY_API_KEY=process.env.BUNNY_API_KEY;
+let BUNNY_CDN_HOST_NAME=process.env.BUNNY_CDN_HOST_NAME;
+let BUNNY_LIBRARY_ID=process.env.BUNNY_LIBRARY_ID;
 const router = express.Router()
 
 //check if handle is already registered

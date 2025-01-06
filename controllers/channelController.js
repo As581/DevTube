@@ -5,10 +5,11 @@ const { generateID } = require("@lib/utils")
 const Channel = require("@models/Channel")
 const Subscription = require("@models/Subscription")
 const { default: axios } = require('axios')
-let BUNNY_TOKEN_KEY="1a2c385a-dfff-4f11-bec4-d109ba836b15";
-let BUNNY_API_KEY="48f3dc8c-7481-4aaf-b58327ea1483-4efd-4f5c"
+
+let BUNNY_TOKEN_KEY=process.env.BUNNY_TOKEN_KEY;
+let BUNNY_API_KEY=process.env.BUNNY_API_KEY;
 //# Library ID for Bunny.net
-let BUNNY_LIBRARY_ID="319193"
+let BUNNY_LIBRARY_ID=process.env.BUNNY_LIBRARY_ID;
 // Create a new channel
 /*const createChannel = async (req, res) => {
   try {

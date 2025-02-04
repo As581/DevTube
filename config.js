@@ -11,7 +11,7 @@ passport.use(
         {
           clientID: process.env.CLIENT_ID,
        clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: 'https://devtube-wih8.onrender.com/api/auth/google/callback',
+    callbackURL: '/api/auth/google/callback',
         },
         async (accessToken, refreshToken, profile, cb) => {
             try {

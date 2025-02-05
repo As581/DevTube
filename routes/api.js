@@ -141,7 +141,7 @@ router.get("/google", passport.authenticate("google", { scope: ["profile", "emai
     }
 );*/
 router.get('/api/auth/google/callback', 
-    passport.authenticate('google', { failureRedirect: '/ }), 
+    passport.authenticate('google', { failureRedirect: '/' }), 
     (req, res) => {
         console.log("User authenticated:", req.user);
         res.redirect('/'); // Instead of '/', try a different route

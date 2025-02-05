@@ -133,13 +133,21 @@ router.get('/hashtag/:tag/videos', getTagVideos)
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
 // Google login callback
-router.get('/api/auth/google/callback', 
+/*router.get('/api/auth/google/callback', 
     passport.authenticate('google', { failureRedirect: "/" }), 
     (req, res) => {
         // Successful authentication
         res.redirect("/"); // Redirect to a dashboard or home after successful login
     }
+);*/
+router.get('/api/auth/google/callback', 
+    passport.authenticate('google', { failureRedirect: '/ }), 
+    (req, res) => {
+        console.log("User authenticated:", req.user);
+        res.redirect('/'); // Instead of '/', try a different route
+    }
 );
+
 
 // Logout route
 router.get('/logout', (req, res, next) => {

@@ -141,7 +141,7 @@ app.use(session({
   resave: false, 
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI, // MongoDB connection string from environment variable
+    mongoUrl: process.env.URI, // MongoDB connection string from environment variable
     collectionName: 'sessions', // Optional: Customize session collection name
     ttl: 14 * 24 * 60 * 60, // 14 days expiration
     autoRemove: 'native' // Auto-remove expired sessions

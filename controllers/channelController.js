@@ -204,10 +204,16 @@ const createChannel = async (req, res) => {
     //  `https://video.bunnycdn.com/library/your-library-id/collections`
 
       const collectionResponse = await axios.post(
-        `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/collections`,
-        { name: uid },
-        { headers: { AccessKey: BUNNY_API_KEY } }
-      );
+  `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/collections`,
+  { name: uid },
+  {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${BUNNY_API_KEY}` // ✅ Correct
+    }
+  }
+);
 
       // Logging BunnyCDN response
       console.log("BunnyCDN collection response:", collectionResponse.data);

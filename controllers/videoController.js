@@ -30,11 +30,16 @@ const createVideo = async (req, res) => {
       const partsArray = thumbnail.path.split('\\')
       const thumbnailUrl = `/${partsArray[1]}/${partsArray[2]}`
       const bunnyResponse = await axios.post(
-        //https://dash.bunny.net/stream/${BUNNY_LIBRARY_ID}/library/collections
-        `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos/${videoId}/thumbnail?thumbnailUrl=${thumbnailUrl}`, null,
-        { headers: { accept: 'application/json', AccessKey: BUNNY_API_KEY } }
-      )
-      fs.unlink('./public/temp-upload/' + partsArray[2], (err) => {
+  `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos/${videoId}/thumbnail?thumbnailUrl=${encodeURIComponent(thumbnailUrl)}`,
+  null, // body is empty
+  {
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${BUNNY_API_KEY}` // ✅ Correct
+    }
+  }
+)
+  fs.unlink('./public/temp-upload/' + partsArray[2], (err) => {
         if (err) {
           console.error('Failed to delete file:', err)
         } else {
@@ -78,26 +83,28 @@ const createVideo = async (req, res) => {
       return tag
     }))
 //https://dash.bunny.net/stream/${BUNNY_LIBRARY_ID}/library/collections
-    await axios.post(`https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos/${videoId}`, {
-      metaTags: [
-        { property: 'title', value: title },
-        { property: 'description', value: description },
-        { property: 'tags', value: updatedTags.map(tag => tag._id).join(',') },
-        { property: 'privacySettings', value: visibility },
-        { property: 'commentsStatus', value: comments },
-        { property: 'viewsEnabled', value: view },
-        { property: 'isDraft', value: 'false' },
-        { property: 'uid', value: video.uid }
-      ]
-    }, {
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        AccessKey: BUNNY_API_KEY
-      },
-      data: { title }
-    })
-
+    await axios.post(
+  `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos/${videoId}`,
+  {
+    metaTags: [
+      { property: 'title', value: title },
+      { property: 'description', value: description },
+      { property: 'tags', value: updatedTags.map(tag => tag._id).join(',') },
+      { property: 'privacySettings', value: visibility },
+      { property: 'commentsStatus', value: comments },
+      { property: 'viewsEnabled', value: view },
+      { property: 'isDraft', value: 'false' },
+      { property: 'uid', value: video.uid }
+    ]
+  },
+  {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${BUNNY_API_KEY}` // ✅ Correct
+    }
+  }
+)
     if (!video.uploadDate && visibility == 'public') video.uploadDate = new Date()
 
 
@@ -156,11 +163,16 @@ const getBunnyVideo = async (videoId) => {
   //https://dash.bunny.net/stream/${BUNNY_LIBRARY_ID}/library/collections
   try {
     const response = await axios.get(
-      `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos/${videoId}`,
-      {
-        headers: { accept: "application/json", AccessKey: BUNNY_API_KEY },
-      }
-    )
+  `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos/${videoId}`,
+  {
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${BUNNY_API_KEY}` // ✅ Correct format
+    },
+  }
+)
+
+console.log(response.data);
     return response.data
   } catch (error) {
     console.error(error)
@@ -201,11 +213,16 @@ const createUpload = async (req, res) => {
 //https://dash.bunny.net/stream/${BUNNY_LIBRARY_ID}/library/collections
   // Create a new video entry in BunnyCDN
   const videoResponse = await axios.post(
-    `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos`,
-    { title: filename, collectionId: channel.collectionId },
-    { headers: { AccessKey: BUNNY_API_KEY } }
-  )
-
+  `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos`,
+  { title: filename, collectionId: channel.collectionId },
+  {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${BUNNY_API_KEY}` // ✅ Correct
+    }
+  }
+)
   const { guid: videoId } = videoResponse.data
 
   // Generate a unique UID for the video
@@ -310,14 +327,24 @@ const getTagVideos = async (req, res) => {
 }
 
 const searchVideos = async ({ page = 1, limit = 10, search = null, collection = null, orderBy = null }) => {
-  const response = await axios.request({
-    method: 'GET',
-    url: `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos?page=${page}&limit=${limit}&collection=${collection}${search ? '&search=' + search : ''}${orderBy ? '&orderBy=' + orderBy : ''}`,
-    headers: { accept: 'application/json', AccessKey: BUNNY_API_KEY }
-  })
-  return response.data
-}
+  const params = { page, limit }
+  if (collection) params.collection = collection
+  if (search) params.search = search
+  if (orderBy) params.orderBy = orderBy
 
+  const response = await axios.get(
+    `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos`,
+    {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${BUNNY_API_KEY}` // ✅ Correct
+      },
+      params
+    }
+  )
+
+  return response.data
+   }
 // Endpoint to delete a video
 const deleteVideo = async (req, res) => {
   try {
@@ -329,9 +356,14 @@ const deleteVideo = async (req, res) => {
     if (!video) return res.status(404).send("Video not found")
 
     const videoResponse = await axios.delete(
-      `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos/${req.params.videoId}`,
-      { headers: { AccessKey: BUNNY_API_KEY } }
-    )
+  `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos/${req.params.videoId}`,
+  {
+    headers: {
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${BUNNY_API_KEY}` // ✅ Correct
+    }
+  }
+)
 
     if (videoResponse.data.success)
       res.status(200).send("Video deleted successfully")
